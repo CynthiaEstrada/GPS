@@ -1,18 +1,24 @@
 package com.example.cynth.myapplication2;
 
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerDragListener,OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
+    double latitud, longitud;
+    private Marker marcador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +41,77 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
 
+        MainActivity mA = new MainActivity();
+
+       // mA.ubicacionTelefono();
+
+        latitud = MainActivity.latitud;
+        longitud = MainActivity.longitud;
+
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        final LatLng ubActual = new LatLng(latitud, longitud);
+        Marker mk = googleMap.addMarker(new MarkerOptions()
+                .position(ubActual)
+                .title("marcador movible")
+                .draggable(true));
+
+        mMap.addMarker(new MarkerOptions().position(ubActual).title("ubicacion del telefono"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ubActual, 20));
+
+        googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnMarkerDragListener(this);
+
+        FloatingActionButton Fb = (FloatingActionButton) findViewById(R.id.fAB);
+
+        Fb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.clear();
+
+                marcador = googleMap.addMarker(new MarkerOptions().position(ubActual).draggable(true));
+                
+
+            }
+        });
+
+
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+        if(marker.equals(marcador)){
+
+            Toast.makeText(this, "" + latitud + longitud, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        if(marker.equals(marcador)){
+
+            latitud = marker.getPosition().latitude;
+            longitud = marker.getPosition().longitude;
+            Toast.makeText(this, "" + latitud + longitud, Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if(marker.equals(marcador)){
+
+            Toast.makeText(this, "" + latitud + longitud, Toast.LENGTH_SHORT).show();
+        }
+
+        return false;
     }
 }

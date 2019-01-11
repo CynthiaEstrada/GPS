@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-feature android:name="android.hardware.location.gps" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -13,6 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service android:name=".MiServicio" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -25,7 +30,17 @@
         <service
             android:name=".MyService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDl4ka-D_mDUelGyo9RIuWet3mFZWEWFaA" />
+
+        <activity
+            android:name=".MapsActivity"
+            android:label="Mapa"></activity>
     </application>
 
 </manifest>

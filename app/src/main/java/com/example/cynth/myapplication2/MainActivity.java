@@ -2,6 +2,7 @@ package com.example.cynth.myapplication2;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView tvUbicacion;
     Button boton;
+    public static double longitud, latitud;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,40 +29,11 @@ public class MainActivity extends AppCompatActivity {
         boton = (Button) findViewById(R.id.button);
         tvUbicacion =(TextView)findViewById(R.id.textoUbicacion);
 
-        boton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LocationManager locationManager = (LocationManager) MainActivity.this.getSystemService(Context.LOCATION_SERVICE);
-
-// Define a listener that responds to location updates
-                LocationListener locationListener = new LocationListener() {
-                    public void onLocationChanged(Location location) {
-                        // Called when a new location is found by the network location provider.
-                        tvUbicacion.setText("" + location.getLatitude()+ " " + location.getLongitude());
-
-                    }
-
-                    public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-                    public void onProviderEnabled(String provider) {}
-
-                    public void onProviderDisabled(String provider) {}
-                };
-
-// Register the listener with the Location Manager to receive location updates
-
-                int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.ACCESS_FINE_LOCATION);
-
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            }
-        });
-
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
+        int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
         if(permissionCheck == PackageManager.PERMISSION_DENIED){
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                 // Show an expanation to the user *asynchronously* -- don't block
@@ -71,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // No explanation needed, we can request the permission.
 
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         1);
 
@@ -80,6 +53,47 @@ public class MainActivity extends AppCompatActivity {
                 // result of the request.
             }
         }
+
+        ubicacionTelefono();
+
+        boton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                Intent intent = new Intent(v.getContext(), MapsActivity.class);
+                startActivityForResult(intent, 0);
+            }
+        });
+
+    }
+
+    public void ubicacionTelefono(){
+        LocationManager locationManager = (LocationManager) MainActivity.this.getSystemService(Context.LOCATION_SERVICE);
+
+// Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                latitud = location.getLatitude();
+                longitud = location.getLongitude();
+
+                //tvUbicacion.setText("" + location.getLatitude()+ " " + location.getLongitude());
+
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+
+        };
+
+        int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
     }
 
